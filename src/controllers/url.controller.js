@@ -1,5 +1,6 @@
 import { createShorturl, getShortUrl, updateCount, deleteOriginalUrl } from "../services/url.service.js";
 import config from "../config/index.js";
+import { isValidUrl } from "../utils/urlValidator.js";
 
 export async function createUrl(req, res) {
     try {
@@ -10,6 +11,10 @@ export async function createUrl(req, res) {
                 .json({ message: "Original URL is required" })
         }
 
+        if (!isValidUrl(originalUrl)) {
+            return res.status(400).json({ message: "Invalid URL format" });
+        }
+        
         const result = await createShorturl(originalUrl);
 
         return res.status(201).json({

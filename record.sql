@@ -27,3 +27,10 @@ MODIFY original_url VARCHAR(2048) NOT NULL;
 ALTER TABLE urls
 ADD CONSTRAINT uk_original_url UNIQUE (original_url);
 
+-- check
+ALTER TABLE urls
+ADD CONSTRAINT chk_original_url
+CHECK (
+    original_url LIKE 'http://%'
+    OR original_url LIKE 'https://%'
+);
