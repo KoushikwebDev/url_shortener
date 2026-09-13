@@ -1,7 +1,9 @@
-require("dotenv").config();
- 
- const config = {
+import dotenv from "dotenv";
+dotenv.config();
+
+const config = {
     port: process.env.PORT,
+    appUrl: process.env.APP_URL,
     db: {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -9,4 +11,4 @@ require("dotenv").config();
         database: process.env.DB_NAME,
     },
 };
-module.exports = config;
+export default config;

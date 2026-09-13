@@ -1,21 +1,27 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
 
-// const urlRoutes = require("./routes/url.routes");
+import urlRoutes from "./routes/url.routes.js";
+import { redirectUrl } from "./controllers/url.controller.js";
 
 const app = express();
 
 app.use(helmet()); // Helmet helps to secure our application by setting various HTTP headers.
+
 app.use(cors()); // CORS (Cross-Origin Resource Sharing) is a mechanism that allows different web applications to interact with each other.
-app.use(express.json());
 
-// app.use("/api/v1/urls", urlRoutes);
+app.use(express.json()); // express.json() is a middleware that parses incoming requests with JSON payloads.
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok"
+app.use("/api/v1/urls", urlRoutes);
+
+app.get("/health", (_, res) => {
+  return res.status(200).json({
+    status: "ok",
+    message: "Healthy"
   });
 });
 
-module.exports = app;
+app.get('/:shortCode', redirectUrl);
+
+export default app;
