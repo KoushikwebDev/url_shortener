@@ -1,5 +1,5 @@
 import { generateShortCode } from "../utils/shortCode.js";
-import { createUrl, findByShortCode, updateClickCount } from "../repositories/url.repository.js";
+import { createUrl, deleteByShortCode, findByShortCode, updateClickCount } from "../repositories/url.repository.js";
 
 export async function createShorturl(originalUrl) {
 
@@ -17,4 +17,9 @@ export async function getShortUrl(shortCode) {
 
 export async function updateCount (shortCode){
     return await updateClickCount(shortCode);
+}
+
+
+export async function deleteOriginalUrl (shortCode){
+    return await deleteByShortCode(shortCode);
 }

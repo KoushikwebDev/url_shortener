@@ -19,3 +19,11 @@ VALUES (
     'aB92xK',
     'https://www.google.com'
 );
+
+-- alter
+ALTER TABLE urls
+MODIFY original_url VARCHAR(2048) NOT NULL;
+
+ALTER TABLE urls
+ADD CONSTRAINT uk_original_url UNIQUE (original_url);
+
