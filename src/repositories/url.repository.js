@@ -60,7 +60,6 @@ export async function findByShortCode(shortCode) {
         expires_at
         FROM urls
         WHERE short_code = ?
-        LIMIT = 1
         `,
         [shortCode]
     );
