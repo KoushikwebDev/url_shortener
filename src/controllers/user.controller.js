@@ -58,7 +58,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     const token = generateToken(user.id);
 
     // Remove password hash from the response
-    const { pass_hash, ...safeUser } = user;
+    delete user.pass_hash;
 
     const cookieOptions = {
         httpOnly: true,
@@ -70,7 +70,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     return res.status(200).cookie("token", token, cookieOptions).json({
         message: "Login successful",
         token,
-        user: safeUser
+        user
     });
 });
 
