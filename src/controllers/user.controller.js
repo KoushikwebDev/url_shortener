@@ -2,6 +2,8 @@ import { createUser as createUserService, findUser } from "../services/user.serv
 import bcrypt from "bcrypt";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import { generateToken } from "../utils/generateToken.js";
+import config from "../config/index.js";
 
 
 export const createUserProfile = asyncHandler(async (req, res) => {
@@ -33,5 +35,47 @@ export const createUserProfile = asyncHandler(async (req, res) => {
             email: result.email,
             image: result.image
         }
+    });
+});
+
+export const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body || {};
+
+    if (!email || !password) {
+        throw new ApiError(400, "Email and password are required");
+    }
+
+    const user = await findUser(email);
+    if (!user) {
+        throw new ApiError(401, "Invalid email or password");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.pass_hash);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid email or password");
+    }
+
+    const token = generateToken(user.id);
+
+    // Remove password hash from the response
+    const { pass_hash, ...safeUser } = user;
+
+    const cookieOptions = {
+        httpOnly: true,
+        secure: config.nodeEnv === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    };
+
+    return res.status(200).cookie("token", token, cookieOptions).json({
+        message: "Login successful",
+        token,
+        user: safeUser
+    });
+});
+
+export const logoutUser = asyncHandler(async (req, res) => {
+    return res.status(200).clearCookie("token").json({
+        message: "Logout successful"
     });
 });
