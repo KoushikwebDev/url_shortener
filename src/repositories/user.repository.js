@@ -64,3 +64,26 @@ export const findById = async (id) => {
 
     return result[0] || null;
 }
+
+export const updateRefreshToken = async (id, refreshToken) => {
+    await pool.execute(
+        `
+        UPDATE users 
+        SET refresh_token = ? 
+        WHERE id = ?
+        `,
+        [refreshToken, id]
+    );
+};
+
+export const findUserByIdWithRefreshToken = async (id) => {
+    const [result] = await pool.execute(
+        `
+        SELECT ${USER_PUBLIC_FIELDS}, refresh_token FROM users 
+        WHERE id = ?
+        `,
+        [id]
+    );
+
+    return result[0] || null;
+};

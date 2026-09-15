@@ -8,6 +8,7 @@ import { redirectUrl } from "./controllers/url.controller.js";
 import userRouter from "./routes/user.routes.js";
 
 import cookieParser from "cookie-parser";
+import { globalLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use(cors()); // CORS (Cross-Origin Resource Sharing) is a mechanism that all
 
 app.use(cookieParser()); // parses cookies attached to the client request object
 app.use(express.json()); // express.json() is a middleware that parses incoming requests with JSON payloads.
+
+// Apply global rate limiting to all /api routes
+app.use("/api", globalLimiter);
 
 app.use("/api/v1/urls", urlRoutes);
 app.use("/api/v1/users", userRouter);

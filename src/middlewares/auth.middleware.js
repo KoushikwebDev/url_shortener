@@ -6,13 +6,13 @@ import { findById } from "../repositories/user.repository.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
-        const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
         if (!token) {
             throw new ApiError(401, "Unauthorized request");
         }
 
-        const decodedToken = jwt.verify(token, config.jwt.secret);
+        const decodedToken = jwt.verify(token, config.jwt.accessTokenSecret);
 
         const user = await findById(decodedToken.id);
 
@@ -20,8 +20,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
             throw new ApiError(401, "Invalid Access Token");
         }
 
-        // Exclude password hash from the attached user object
-        const { pass_hash, ...safeUser } = user;
+        // Exclude password hash and refresh token from the attached user object
+        const { pass_hash, refresh_token, ...safeUser } = user;
         req.user = safeUser;
         
         next();

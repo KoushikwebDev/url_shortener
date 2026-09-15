@@ -59,3 +59,7 @@ CREATE TABLE users (
 -- alter user name to null
 ALTER TABLE users
 MODIFY name VARCHAR(100) NULL;
+
+-- add refresh token to users table
+ALTER TABLE users
+ADD refresh_token VARCHAR(500) NULL;
