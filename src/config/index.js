@@ -5,6 +5,7 @@ const config = {
     nodeEnv: process.env.NODE_ENV || "development",
     port: process.env.PORT,
     appUrl: process.env.APP_URL,
+    redisUrl: process.env.REDIS_URL || "redis://localhost:6379",
     db: {
         host: process.env.DB_HOST,
         user: process.env.DB_USER,

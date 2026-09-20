@@ -32,3 +32,11 @@ This document summarizes the current architecture, features, and design patterns
 
 ## Knowledge Base
 - **Learnings & Scalability:** Architectural notes (such as scaling the rate limiter with Redis) are maintained in `LEARNINGS.md`.
+
+<!-- Docker -->
+docker run --name url-shortener-redis \
+  -p 6379:6379 \
+  -d redis
+  
+docker exec -it url-shortener-redis redis-cli
+
