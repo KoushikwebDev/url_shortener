@@ -100,6 +100,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         
         const user = await findUserByIdWithRefreshToken(decodedToken.id);
 
+        // checking if user exist or not and refresh token is same as in database
         if (!user || user.refresh_token !== incomingRefreshToken) {
             throw new ApiError(401, "Refresh token is expired or used");
         }
