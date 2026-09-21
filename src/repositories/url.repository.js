@@ -97,3 +97,23 @@ export const deleteByShortCode = async (shortCode, userId) => {
 
     return result.affectedRows > 0;
 }
+
+export const findUrlsByUserId = async (userId) => {
+    const [rows] = await pool.execute(
+        `
+        SELECT
+        id,
+        short_code,
+        original_url,
+        click_count,
+        created_at,
+        expires_at
+        FROM urls
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        `,
+        [userId]
+    );
+
+    return rows;
+};

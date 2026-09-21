@@ -6,6 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/generateToken.js";
 import config from "../config/index.js";
 import { updateRefreshToken, findUserByIdWithRefreshToken } from "../repositories/user.repository.js";
+import { findUrlsByUserId } from "../repositories/url.repository.js";
 
 const cookieOptions = {
     httpOnly: true,
@@ -125,4 +126,20 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid refresh token");
     }
+});
+
+export const getUserProfile = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+
+    // We already have the safe user object attached to req by the verifyJWT middleware
+    const user = req.user;
+
+    // Fetch all URLs created by this user
+    const urls = await findUrlsByUserId(userId);
+
+    return res.status(200).json({
+        message: "User profile fetched successfully",
+        user,
+        urls
+    });
 });
