@@ -33,6 +33,20 @@ MODIFY original_url VARCHAR(2048) NOT NULL;
 ALTER TABLE urls
 ADD CONSTRAINT uk_original_url UNIQUE (original_url);
 
+-- alter add user_id column
+ALTER TABLE urls
+ADD COLUMN user_id BIGINT UNSIGNED NOT NULL DEFAULT 1;
+
+ALTER TABLE urls
+ADD CONSTRAINT fk_urls_user_id 
+FOREIGN KEY (user_id) REFERENCES users(id) 
+ON DELETE CASCADE;
+
+--Once your application always gets user_id from JWT, you don't want MySQL silently assigning user 1 if your application forgets to provide it.
+ALTER TABLE urls
+ALTER COLUMN user_id DROP DEFAULT; -- we will set it after creating the user table
+
+
 -- check
 ALTER TABLE urls
 ADD CONSTRAINT chk_original_url
@@ -40,6 +54,14 @@ CHECK (
     original_url LIKE 'http://%'
     OR original_url LIKE 'https://%'
 );
+
+ALTER TABLE urls
+DROP INDEX uk_original_url;
+
+--adding composite unique key
+ALTER TABLE urls
+ADD CONSTRAINT uk_user_original_url
+UNIQUE (user_id, original_url);
 
 
 -- user table
@@ -63,3 +85,5 @@ MODIFY name VARCHAR(100) NULL;
 -- add refresh token to users table
 ALTER TABLE users
 ADD refresh_token VARCHAR(500) NULL;
+
+

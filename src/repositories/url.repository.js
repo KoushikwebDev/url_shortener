@@ -1,7 +1,7 @@
 import pool from "../config/db.js";
 
 
-export const findExistingOriginalUrl = async (originalUrl) => {
+export const findExistingOriginalUrl = async (originalUrl, userId) => {
     
     const [rows] = await pool.execute(
         `
@@ -13,17 +13,17 @@ export const findExistingOriginalUrl = async (originalUrl) => {
         created_at,
         expires_at
         FROM urls
-        WHERE original_url = ?
+        WHERE original_url = ? AND user_id = ?
         `,
-        [originalUrl]
+        [originalUrl, userId]
     );
 
     return rows.length > 0 ? rows[0] : null;
 }
 
-export async function createUrl(shortCode, originalUrl) {
+export async function createUrl(shortCode, originalUrl, userId) {
 
-    const existingUrl = await findExistingOriginalUrl(originalUrl);
+    const existingUrl = await findExistingOriginalUrl(originalUrl, userId);
 
     if (existingUrl) {
         return existingUrl;
@@ -33,17 +33,19 @@ export async function createUrl(shortCode, originalUrl) {
         `
         INSERT INTO urls (
         short_code,
-        original_url
+        original_url,
+        user_id
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         `,
-        [shortCode, originalUrl]
+        [shortCode, originalUrl, userId]
     );
 
     return {
         id: result.insertId,
         short_code: shortCode,
-        original_url: originalUrl
+        original_url: originalUrl,
+        user_id: userId
     };
 };
 
@@ -84,13 +86,13 @@ export async function updateClickCount(shortCode) {
 }
 
 // delete url
-export const deleteByShortCode = async (shortCode) => {
+export const deleteByShortCode = async (shortCode, userId) => {
     const [ result ] = await pool.execute(
         `
         DELETE FROM urls
-        WHERE short_code = ?
+        WHERE short_code = ? AND user_id = ?
         `,
-        [shortCode]
+        [shortCode, userId]
     );
 
     return result.affectedRows > 0;

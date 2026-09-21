@@ -7,6 +7,7 @@ import redisClient from "../config/redis.js";
 
 export const createUrl = asyncHandler(async (req, res) => {
     const { originalUrl } = req.body;
+    const userId = req.user.id;
 
     if (!originalUrl) {
         throw new ApiError(400, "Original URL is required");
@@ -16,7 +17,7 @@ export const createUrl = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid URL format");
     }
     
-    const result = await createShorturl(originalUrl);
+    const result = await createShorturl(originalUrl, userId);
 
     return res.status(201).json({
         id: result.id,
@@ -61,14 +62,16 @@ export const redirectUrl = asyncHandler(async (req, res) => {
 
 export const deleteUrl = asyncHandler(async (req, res) => {
     const { shortCode } = req.body;
+    const userId = req.user.id;
+
     if(!shortCode){
         throw new ApiError(400, "Short code is required");
     };
 
-    const result = await deleteOriginalUrl(shortCode);
+    const result = await deleteOriginalUrl(shortCode, userId);
 
     if (!result) {
-        throw new ApiError(404, "URL not found");
+        throw new ApiError(404, "URL not found or you are not authorized to delete it");
     };
 
     // Invalidate the cache for this shortCode so it doesn't redirect to a deleted URL

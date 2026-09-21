@@ -1,11 +1,11 @@
 import { generateShortCode } from "../utils/shortCode.js";
 import { createUrl, deleteByShortCode, findByShortCode, updateClickCount, findExistingOriginalUrl } from "../repositories/url.repository.js";
 
-export async function createShorturl(originalUrl) {
+export async function createShorturl(originalUrl, userId) {
     for (let i = 0; i < 5; i++) {
         try {
             const shortCode = generateShortCode();
-            const result = await createUrl(shortCode, originalUrl);
+            const result = await createUrl(shortCode, originalUrl, userId);
             return result;
         } catch (error) {
             if (
@@ -16,12 +16,12 @@ export async function createShorturl(originalUrl) {
             }
 
             // Original URL was inserted by another
-            // concurrent request
+            // concurrent request for this specific user
             if (
                 error.code === "ER_DUP_ENTRY" &&
-                error.message.includes("uk_original_url")
+                error.message.includes("uk_user_original_url")
             ) {
-                return await findExistingOriginalUrl(originalUrl);
+                return await findExistingOriginalUrl(originalUrl, userId);
             }
 
             // Anything else is a real error
@@ -42,6 +42,6 @@ export async function updateCount(shortCode) {
 }
 
 
-export async function deleteOriginalUrl(shortCode) {
-    return await deleteByShortCode(shortCode);
+export async function deleteOriginalUrl(shortCode, userId) {
+    return await deleteByShortCode(shortCode, userId);
 }
